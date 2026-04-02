@@ -45,13 +45,13 @@ A very lightweight, open-source Android app for cleaning shared social-media URL
 
 Share the URLs to the app, and it will copy clean URLs for you.
 
-<img src="docs/img/usage/1.jpg" alt="Usage 1" width="25%">
+<img src="docs/img/usage/1.jpg" alt="Usage 1" width="32%">
 
 Alternatively, you can enable a popup to share directly with others. This can be configured in the app settings.
 
 <p align="left">
-  <img src="docs/img/usage/2.jpg" alt="Usage 2" width="25%">
-  <img src="docs/img/usage/3.jpg" alt="Usage 3" width="25%">
+  <img src="docs/img/usage/2.jpg" alt="Usage 2" width="32%">
+  <img src="docs/img/usage/3.jpg" alt="Usage 3" width="32%">
 </p>
 
 ---
