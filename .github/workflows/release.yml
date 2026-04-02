@@ -1,0 +1,128 @@
+name: Release APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "25"
+          distribution: "zulu"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Prepare Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/keystore.jks
+
+      - name: Build Release APK
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ALIAS: ${{ secrets.ALIAS }}
+        run: gradle assembleRelease
+
+      - name: Rename APK
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/release -maxdepth 1 -name '*.apk' | head -n 1)
+          OUTPUT_FILE="clean-social-link.apk"
+          cp "$APK_PATH" "app/build/outputs/apk/release/$OUTPUT_FILE"
+          echo "OUTPUT_APK=$OUTPUT_FILE" >> "$GITHUB_ENV"
+
+      - name: Extract Version Name
+        run: |
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts | head -n 1)
+          if [ -z "$VERSION_NAME" ]; then
+            echo "Failed to parse versionName from app/build.gradle.kts"
+            exit 1
+          fi
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          if [[ "$VERSION_NAME" == v* ]]; then
+            VERSION_TAG="$VERSION_NAME"
+          else
+            VERSION_TAG="v$VERSION_NAME"
+          fi
+          echo "VERSION_TAG=$VERSION_TAG" >> "$GITHUB_ENV"
+
+      - name: Release APK
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          TAG_NAME="${VERSION_TAG}"
+          RELEASE_NAME="Clean Social Link ${VERSION_TAG}"
+          APK_FILE="app/build/outputs/apk/release/${OUTPUT_APK}"
+
+          if [ ! -f "$APK_FILE" ]; then
+            echo "APK not found: $APK_FILE"
+            exit 1
+          fi
+
+          EXISTING_STATUS=$(curl -sS -o /tmp/release_lookup.json -w "%{http_code}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "${API_URL}/releases/tags/${TAG_NAME}")
+
+          if [ "$EXISTING_STATUS" = "200" ]; then
+            RELEASE_ID=$(python3 -c "import json; print(json.load(open('/tmp/release_lookup.json'))['id'])")
+            UPDATE_PAYLOAD=$(python3 -c "import json; print(json.dumps({'name': '${RELEASE_NAME}', 'tag_name': '${TAG_NAME}', 'draft': False, 'prerelease': False}))")
+
+            curl -sS \
+              -X PATCH \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "${API_URL}/releases/${RELEASE_ID}" \
+              -d "${UPDATE_PAYLOAD}" > /tmp/release.json
+          else
+            CREATE_PAYLOAD=$(python3 -c "import json; print(json.dumps({'tag_name': '${TAG_NAME}', 'name': '${RELEASE_NAME}', 'draft': False, 'prerelease': False, 'generate_release_notes': True}))")
+
+            curl -sS \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "${API_URL}/releases" \
+              -d "${CREATE_PAYLOAD}" > /tmp/release.json
+          fi
+
+          RELEASE_ID=$(python3 -c "import json; print(json.load(open('/tmp/release.json'))['id'])")
+          UPLOAD_URL=$(python3 -c "import json; print(json.load(open('/tmp/release.json'))['upload_url'].split('{')[0])")
+          ASSET_NAME=$(basename "$APK_FILE")
+
+          ASSETS_JSON=$(curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "${API_URL}/releases/${RELEASE_ID}/assets")
+
+          EXISTING_ASSET_ID=$(python3 -c "import json; import sys; assets=json.loads(sys.argv[1]); target='${ASSET_NAME}'; print(next((str(a['id']) for a in assets if a.get('name')==target), ''))" "${ASSETS_JSON}")
+          if [ -n "$EXISTING_ASSET_ID" ]; then
+            curl -sS \
+              -X DELETE \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              "${API_URL}/releases/assets/${EXISTING_ASSET_ID}" > /dev/null
+          fi
+
+          ENCODED_ASSET_NAME=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${ASSET_NAME}'))")
+          curl -sS \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            --data-binary @"${APK_FILE}" \
+            "${UPLOAD_URL}?name=${ENCODED_ASSET_NAME}" > /tmp/upload_result.json
+
+          echo "Release published: ${RELEASE_NAME} (tag: ${TAG_NAME})"

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CleanSocialLink" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/md_purple_primary</item>
+        <item name="colorOnPrimary">@color/md_on_primary</item>
+        <item name="colorPrimaryContainer">@color/md_purple_container</item>
+        <item name="colorSecondary">@color/md_purple_secondary</item>
+    </style>
+
+    <style name="Theme.CleanSocialLink.Transparent" parent="Theme.CleanSocialLink">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Theme.CleanSocialLink.Blue" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#1976D2</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#BBDEFB</item>
+        <item name="colorSecondary">#1565C0</item>
+    </style>
+    <style name="Theme.CleanSocialLink.Blue.Transparent" parent="Theme.CleanSocialLink.Blue">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Theme.CleanSocialLink.Green" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#388E3C</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#C8E6C9</item>
+        <item name="colorSecondary">#2E7D32</item>
+    </style>
+    <style name="Theme.CleanSocialLink.Green.Transparent" parent="Theme.CleanSocialLink.Green">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Theme.CleanSocialLink.Purple" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#7B1FA2</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#E1BEE7</item>
+        <item name="colorSecondary">#6A1B9A</item>
+    </style>
+    <style name="Theme.CleanSocialLink.Purple.Transparent" parent="Theme.CleanSocialLink.Purple">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Theme.CleanSocialLink.Red" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#D32F2F</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFCDD2</item>
+        <item name="colorSecondary">#C62828</item>
+    </style>
+    <style name="Theme.CleanSocialLink.Red.Transparent" parent="Theme.CleanSocialLink.Red">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Theme.CleanSocialLink.Orange" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#E64A19</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFCCBC</item>
+        <item name="colorSecondary">#D84315</item>
+    </style>
+    <style name="Theme.CleanSocialLink.Orange.Transparent" parent="Theme.CleanSocialLink.Orange">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Theme.CleanSocialLink.Teal" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#00796B</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#B2DFDB</item>
+        <item name="colorSecondary">#00695C</item>
+    </style>
+    <style name="Theme.CleanSocialLink.Teal.Transparent" parent="Theme.CleanSocialLink.Teal">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+</resources>
